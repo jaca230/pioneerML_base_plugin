@@ -1,0 +1,478 @@
+{
+  "training": {
+    "hpo": {
+      "architecture": {
+        "type": "pion_stop_regressor",
+        "config": {
+          "node_dim": 4,
+          "graph_dim": 3,
+          "splitter_prob_dimension": 3,
+          "endpoint_pred_dimension": 18,
+          "event_affinity_dimension": 3,
+          "pion_stop_pred_dimension": 0,
+          "edge_dim": 4,
+          "hidden": 192,
+          "heads": 4,
+          "layers": 3,
+          "dropout": 0.1,
+          "output_dim": 9
+        }
+      },
+      "module": {
+        "type": "graph_lightning",
+        "config": {
+          "loss": {
+            "type": "quantile_pinball",
+            "config": {}
+          },
+          "lr": 0.001,
+          "weight_decay": 0.0001,
+          "scheduler_step_size": 2,
+          "scheduler_gamma": 0.5
+        }
+      },
+      "trainer": {
+        "type": "lightning_module",
+        "config": {
+          "trainer_kwargs": {
+            "enable_progress_bar": true,
+            "max_epochs": 10,
+            "gradient_clip_val": 2.0
+          },
+          "early_stopping": {
+            "enabled": true,
+            "type": "relative",
+            "config": {
+              "monitor": "val_loss",
+              "mode": "min",
+              "patience": 5,
+              "min_delta": 0.05,
+              "strict": true,
+              "check_finite": true,
+              "verbose": false
+            }
+          }
+        }
+      },
+      "loader_manager": {
+        "config": {
+          "input_sources_spec": {
+            "main_sources": [],
+            "optional_sources_by_name": {
+              "group_probs": [],
+              "group_splitter": [],
+              "endpoint": [],
+              "event_splitter": []
+            },
+            "source_type": "file"
+          },
+          "input_backend": {
+            "type": "parquet",
+            "config": {}
+          },
+          "defaults": {
+            "type": "pion_stop",
+            "config": {
+              "batch_size": null,
+              "mode": "train",
+              "chunk_row_groups": 4,
+              "chunk_workers": 0,
+              "edge_template_cache_enabled": false,
+              "edge_template_cache_max_entries": null,
+              "sample_fraction": 0.25,
+              "train_fraction": 0.8,
+              "val_fraction": 0.1,
+              "test_fraction": 0.1,
+              "split_seed": 0,
+              "use_group_probs": true,
+              "use_splitter_probs": true,
+              "use_endpoint_preds": true,
+              "use_event_splitter_affinity": true,
+              "use_pion_stop_preds": false
+            }
+          },
+          "loaders": {
+            "train_loader": {
+              "config": {
+                "mode": "train",
+                "split": "train",
+                "shuffle_batches": true,
+                "log_diagnostics": false
+              }
+            },
+            "val_loader": {
+              "config": {
+                "mode": "train",
+                "split": "val",
+                "shuffle_batches": false,
+                "log_diagnostics": false
+              }
+            }
+          }
+        }
+      },
+      "hpo": {
+        "type": "config",
+        "config": {
+          "enabled": true,
+          "n_trials": 4,
+          "direction": "minimize",
+          "seed": null,
+          "study_name": "pion_stop_hpo",
+          "storage": "sqlite:///./.optuna/pion_stop_hpo.db",
+          "fallback_dir": null,
+          "allow_schema_fallback": true,
+          "objective": {
+            "type": "val_epoch",
+            "config": {}
+          },
+          "search_space": {
+            "type": "config",
+            "config": {
+              "search_space": {
+                "batch_size": {
+                  "type": "exponent_int",
+                  "base": 2,
+                  "min_exp": 5,
+                  "max_exp": 7
+                },
+                "lr": {
+                  "type": "float",
+                  "low": 0.0001,
+                  "high": 0.01,
+                  "log": true
+                },
+                "weight_decay": {
+                  "type": "float",
+                  "low": 1e-06,
+                  "high": 0.001,
+                  "log": true
+                },
+                "hidden": {
+                  "type": "int",
+                  "low": 128,
+                  "high": 320,
+                  "step": 32
+                },
+                "dropout": {
+                  "type": "float",
+                  "low": 0.0,
+                  "high": 0.3
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "train": {
+      "architecture": {
+        "type": "pion_stop_regressor",
+        "config": {
+          "node_dim": 4,
+          "graph_dim": 3,
+          "splitter_prob_dimension": 3,
+          "endpoint_pred_dimension": 18,
+          "event_affinity_dimension": 3,
+          "pion_stop_pred_dimension": 0,
+          "edge_dim": 4,
+          "hidden": 192,
+          "heads": 4,
+          "layers": 3,
+          "dropout": 0.1,
+          "output_dim": 9
+        }
+      },
+      "module": {
+        "type": "graph_lightning",
+        "config": {
+          "loss": {
+            "type": "quantile_pinball",
+            "config": {}
+          },
+          "lr": 0.001,
+          "weight_decay": 0.0001,
+          "scheduler_step_size": 2,
+          "scheduler_gamma": 0.5
+        }
+      },
+      "trainer": {
+        "type": "lightning_module",
+        "config": {
+          "trainer_kwargs": {
+            "enable_progress_bar": true,
+            "max_epochs": 25,
+            "gradient_clip_val": 2.0
+          },
+          "early_stopping": {
+            "enabled": true,
+            "type": "relative",
+            "config": {
+              "monitor": "val_loss",
+              "mode": "min",
+              "patience": 5,
+              "min_delta": 0.05,
+              "strict": true,
+              "check_finite": true,
+              "verbose": false
+            }
+          }
+        }
+      },
+      "loader_manager": {
+        "config": {
+          "input_sources_spec": {
+            "main_sources": [],
+            "optional_sources_by_name": {
+              "group_probs": [],
+              "group_splitter": [],
+              "endpoint": [],
+              "event_splitter": []
+            },
+            "source_type": "file"
+          },
+          "input_backend": {
+            "type": "parquet",
+            "config": {}
+          },
+          "defaults": {
+            "type": "pion_stop",
+            "config": {
+              "batch_size": null,
+              "mode": "train",
+              "chunk_row_groups": 4,
+              "chunk_workers": 0,
+              "edge_template_cache_enabled": false,
+              "edge_template_cache_max_entries": null,
+              "sample_fraction": 1.0,
+              "train_fraction": 0.8,
+              "val_fraction": 0.1,
+              "test_fraction": 0.1,
+              "split_seed": 0,
+              "use_group_probs": true,
+              "use_splitter_probs": true,
+              "use_endpoint_preds": true,
+              "use_event_splitter_affinity": true,
+              "use_pion_stop_preds": false
+            }
+          },
+          "loaders": {
+            "train_loader": {
+              "config": {
+                "mode": "train",
+                "split": "train",
+                "shuffle_batches": true,
+                "log_diagnostics": false
+              }
+            },
+            "val_loader": {
+              "config": {
+                "mode": "train",
+                "split": "val",
+                "shuffle_batches": false,
+                "log_diagnostics": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "evaluate": {
+      "evaluator": {
+        "type": "simple_regression",
+        "config": {
+          "plots": []
+        }
+      },
+      "loader_manager": {
+        "config": {
+          "input_sources_spec": {
+            "main_sources": [],
+            "optional_sources_by_name": {
+              "group_probs": [],
+              "group_splitter": [],
+              "endpoint": [],
+              "event_splitter": []
+            },
+            "source_type": "file"
+          },
+          "input_backend": {
+            "type": "parquet",
+            "config": {}
+          },
+          "defaults": {
+            "type": "pion_stop",
+            "config": {
+              "batch_size": null,
+              "mode": "train",
+              "chunk_row_groups": 4,
+              "chunk_workers": 0,
+              "edge_template_cache_enabled": false,
+              "edge_template_cache_max_entries": null,
+              "sample_fraction": 1.0,
+              "train_fraction": 0.8,
+              "val_fraction": 0.1,
+              "test_fraction": 0.1,
+              "split_seed": 0,
+              "use_group_probs": true,
+              "use_splitter_probs": true,
+              "use_endpoint_preds": true,
+              "use_event_splitter_affinity": true,
+              "use_pion_stop_preds": false
+            }
+          },
+          "loaders": {
+            "test_loader": {
+              "config": {
+                "mode": "train",
+                "split": "test",
+                "shuffle_batches": false,
+                "log_diagnostics": false
+              }
+            }
+          }
+        }
+      },
+      "enabled": true
+    },
+    "export": {
+      "exporter": {
+        "type": "torchscript",
+        "config": {
+          "enabled": true,
+          "export_dir": "trained_models/pion_stop_regression",
+          "filename_prefix": "pion_stop",
+          "prefer_cuda": true
+        }
+      },
+      "loader_manager": {
+        "config": {
+          "input_sources_spec": {
+            "main_sources": [],
+            "optional_sources_by_name": {
+              "group_probs": [],
+              "group_splitter": [],
+              "endpoint": [],
+              "event_splitter": []
+            },
+            "source_type": "file"
+          },
+          "input_backend": {
+            "type": "parquet",
+            "config": {}
+          },
+          "defaults": {
+            "type": "pion_stop",
+            "config": {
+              "batch_size": 1,
+              "mode": "train",
+              "chunk_row_groups": 1,
+              "chunk_workers": 0,
+              "edge_template_cache_enabled": false,
+              "edge_template_cache_max_entries": null,
+              "sample_fraction": 1.0,
+              "train_fraction": 0.8,
+              "val_fraction": 0.1,
+              "test_fraction": 0.1,
+              "split_seed": 0,
+              "use_group_probs": true,
+              "use_splitter_probs": true,
+              "use_endpoint_preds": true,
+              "use_event_splitter_affinity": true,
+              "use_pion_stop_preds": false
+            }
+          },
+          "loaders": {
+            "export_loader": {
+              "config": {
+                "mode": "train",
+                "shuffle_batches": false,
+                "log_diagnostics": false
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "inference": {
+    "model_handle_builder": {
+      "model_handle": {
+        "type": "script",
+        "config": {
+          "model_subdir": "pion_stop_regression",
+          "model_type": "torchscript",
+          "model_path": null
+        }
+      }
+    },
+    "inference": {
+      "runtime": {
+        "prefer_cuda": true
+      },
+      "writer": {
+        "type": "pion_stop",
+        "config": {
+          "output_backend": {
+            "type": "parquet",
+            "config": {
+              "target_row_group_rows": 1024
+            }
+          },
+          "fallback_output_dir": "data/pion_stop_regression",
+          "output_dir": "data/pion_stop_regression",
+          "output_path": null,
+          "streaming": true,
+          "write_timestamped": false,
+          "timestamp": null,
+          "writer_params": {}
+        }
+      },
+      "loader_manager": {
+        "config": {
+          "input_sources_spec": {
+            "main_sources": [],
+            "optional_sources_by_name": {
+              "group_probs": [],
+              "group_splitter": [],
+              "endpoint": [],
+              "event_splitter": []
+            },
+            "source_type": "file"
+          },
+          "input_backend": {
+            "type": "parquet",
+            "config": {}
+          },
+          "defaults": {
+            "type": "pion_stop",
+            "config": {
+              "batch_size": 64,
+              "mode": "inference",
+              "chunk_row_groups": 4,
+              "chunk_workers": 0,
+              "edge_template_cache_enabled": false,
+              "edge_template_cache_max_entries": null,
+              "sample_fraction": 1.0,
+              "split_seed": 0,
+              "use_group_probs": true,
+              "use_splitter_probs": true,
+              "use_endpoint_preds": true,
+              "use_event_splitter_affinity": true,
+              "use_pion_stop_preds": false
+            }
+          },
+          "loaders": {
+            "inference_loader": {
+              "config": {
+                "mode": "inference",
+                "shuffle_batches": false,
+                "log_diagnostics": false
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

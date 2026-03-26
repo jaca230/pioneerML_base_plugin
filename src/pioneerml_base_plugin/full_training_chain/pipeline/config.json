@@ -1,0 +1,2814 @@
+{
+  "common": {},
+  "group_classifier": {
+    "training": {
+      "hpo": {
+        "architecture": {
+          "type": "group_classifier",
+          "config": {
+            "node_dim": 4,
+            "edge_dim": 4,
+            "graph_dim": 0,
+            "hidden": 128,
+            "heads": 4,
+            "num_blocks": 2,
+            "dropout": 0.1
+          }
+        },
+        "module": {
+          "type": "graph_lightning",
+          "config": {
+            "loss": {
+              "type": "bce_with_logits",
+              "config": {}
+            },
+            "lr": 0.001,
+            "weight_decay": 0.0001,
+            "scheduler_step_size": 2,
+            "scheduler_gamma": 0.5
+          }
+        },
+        "trainer": {
+          "type": "lightning_module",
+          "config": {
+            "trainer_kwargs": {
+              "enable_progress_bar": true,
+              "max_epochs": 10,
+              "gradient_clip_val": 2.0
+            },
+            "early_stopping": {
+              "enabled": true,
+              "type": "relative",
+              "config": {
+                "monitor": "val_loss",
+                "mode": "min",
+                "patience": 5,
+                "min_delta": 0.05,
+                "strict": true,
+                "check_finite": true,
+                "verbose": false
+              }
+            }
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {},
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "group_classifier",
+              "config": {
+                "batch_size": null,
+                "mode": "train",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 0.125,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0
+              }
+            },
+            "loaders": {
+              "train_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "train",
+                  "shuffle_batches": true,
+                  "log_diagnostics": false
+                }
+              },
+              "val_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "val",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        },
+        "hpo": {
+          "type": "config",
+          "config": {
+            "enabled": true,
+            "n_trials": 4,
+            "direction": "minimize",
+            "seed": null,
+            "study_name": "group_classifier_hpo",
+            "storage": "sqlite:///./.optuna/group_classifier_hpo.db",
+            "fallback_dir": null,
+            "allow_schema_fallback": true,
+            "objective": {
+              "type": "val_epoch",
+              "config": {}
+            },
+            "search_space": {
+              "type": "config",
+              "config": {
+                "search_space": {
+                  "batch_size": {
+                    "type": "exponent_int",
+                    "base": 2,
+                    "min_exp": 5,
+                    "max_exp": 7
+                  },
+                  "lr": {
+                    "type": "float",
+                    "low": 0.0001,
+                    "high": 0.01,
+                    "log": true
+                  },
+                  "weight_decay": {
+                    "type": "float",
+                    "low": 1e-06,
+                    "high": 0.001,
+                    "log": true
+                  },
+                  "hidden": {
+                    "type": "int",
+                    "low": 96,
+                    "high": 264,
+                    "step": 24
+                  },
+                  "heads": {
+                    "type": "categorical",
+                    "choices": [
+                      2,
+                      3,
+                      4,
+                      6,
+                      8
+                    ]
+                  },
+                  "num_blocks": {
+                    "type": "int",
+                    "low": 1,
+                    "high": 4
+                  },
+                  "dropout": {
+                    "type": "float",
+                    "low": 0.0,
+                    "high": 0.3
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "train": {
+        "architecture": {
+          "type": "group_classifier",
+          "config": {
+            "node_dim": 4,
+            "edge_dim": 4,
+            "graph_dim": 0,
+            "hidden": 128,
+            "heads": 4,
+            "num_blocks": 2,
+            "dropout": 0.1
+          }
+        },
+        "module": {
+          "type": "graph_lightning",
+          "config": {
+            "loss": {
+              "type": "bce_with_logits",
+              "config": {}
+            },
+            "lr": 0.001,
+            "weight_decay": 0.0001,
+            "scheduler_step_size": 2,
+            "scheduler_gamma": 0.5
+          }
+        },
+        "trainer": {
+          "type": "lightning_module",
+          "config": {
+            "trainer_kwargs": {
+              "enable_progress_bar": true,
+              "max_epochs": 25,
+              "gradient_clip_val": 2.0
+            },
+            "early_stopping": {
+              "enabled": true,
+              "type": "relative",
+              "config": {
+                "monitor": "val_loss",
+                "mode": "min",
+                "patience": 5,
+                "min_delta": 0.05,
+                "strict": true,
+                "check_finite": true,
+                "verbose": false
+              }
+            }
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {},
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "group_classifier",
+              "config": {
+                "batch_size": null,
+                "mode": "train",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0
+              }
+            },
+            "loaders": {
+              "train_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "train",
+                  "shuffle_batches": true,
+                  "log_diagnostics": false
+                }
+              },
+              "val_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "val",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "evaluate": {
+        "evaluator": {
+          "type": "simple_classification",
+          "config": {
+            "threshold": 0.5,
+            "metrics": [
+              "binary_classification_from_tensors"
+            ],
+            "plots": []
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {},
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "group_classifier",
+              "config": {
+                "batch_size": null,
+                "mode": "train",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0
+              }
+            },
+            "loaders": {
+              "test_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "test",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "export": {
+        "exporter": {
+          "type": "torchscript",
+          "config": {
+            "enabled": true,
+            "export_dir": "trained_models/groupclassifier",
+            "filename_prefix": "groupclassifier",
+            "prefer_cuda": true
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {},
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "group_classifier",
+              "config": {
+                "batch_size": 1,
+                "mode": "train",
+                "chunk_row_groups": 1,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0
+              }
+            },
+            "loaders": {
+              "export_loader": {
+                "config": {
+                  "mode": "train",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "inference": {
+      "model_handle_builder": {
+        "model_handle": {
+          "type": "script",
+          "config": {
+            "model_subdir": "groupclassifier",
+            "model_type": "torchscript",
+            "model_path": null
+          }
+        }
+      },
+      "inference": {
+        "runtime": {
+          "prefer_cuda": true
+        },
+        "writer": {
+          "type": "group_classification",
+          "config": {
+            "output_backend": {
+              "type": "parquet",
+              "config": {
+                "target_row_group_rows": 1024
+              }
+            },
+            "fallback_output_dir": "artifacts/inference_small/group_classifier",
+            "output_dir": "artifacts/inference_small/group_classifier",
+            "output_path": null,
+            "streaming": true,
+            "write_timestamped": true,
+            "timestamp": null,
+            "writer_params": {}
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {},
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "group_classifier",
+              "config": {
+                "batch_size": 64,
+                "mode": "inference",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "split_seed": 0
+              }
+            },
+            "loaders": {
+              "inference_loader": {
+                "config": {
+                  "mode": "inference",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "group_splitter": {
+    "training": {
+      "hpo": {
+        "architecture": {
+          "type": "group_splitter",
+          "config": {
+            "node_dim": 4,
+            "edge_dim": 4,
+            "graph_dim": 3,
+            "hidden": 128,
+            "heads": 4,
+            "layers": 3,
+            "dropout": 0.1,
+            "num_classes": 3
+          }
+        },
+        "module": {
+          "type": "graph_lightning",
+          "config": {
+            "loss": {
+              "type": "bce_with_logits",
+              "config": {}
+            },
+            "lr": 0.001,
+            "weight_decay": 0.0001,
+            "scheduler_step_size": 2,
+            "scheduler_gamma": 0.5
+          }
+        },
+        "trainer": {
+          "type": "lightning_module",
+          "config": {
+            "trainer_kwargs": {
+              "enable_progress_bar": true,
+              "max_epochs": 10,
+              "gradient_clip_val": 2.0
+            },
+            "early_stopping": {
+              "enabled": true,
+              "type": "relative",
+              "config": {
+                "monitor": "val_loss",
+                "mode": "min",
+                "patience": 5,
+                "min_delta": 0.05,
+                "strict": true,
+                "check_finite": true,
+                "verbose": false
+              }
+            }
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "group_splitter",
+              "config": {
+                "batch_size": null,
+                "mode": "train",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 0.125,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0
+              }
+            },
+            "loaders": {
+              "train_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "train",
+                  "shuffle_batches": true,
+                  "log_diagnostics": false
+                }
+              },
+              "val_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "val",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        },
+        "hpo": {
+          "type": "config",
+          "config": {
+            "enabled": true,
+            "n_trials": 4,
+            "direction": "minimize",
+            "seed": null,
+            "study_name": "group_splitter_hpo",
+            "storage": "sqlite:///./.optuna/group_splitter_hpo.db",
+            "fallback_dir": null,
+            "allow_schema_fallback": true,
+            "objective": {
+              "type": "val_epoch",
+              "config": {}
+            },
+            "search_space": {
+              "type": "config",
+              "config": {
+                "search_space": {
+                  "batch_size": {
+                    "type": "exponent_int",
+                    "base": 2,
+                    "min_exp": 5,
+                    "max_exp": 7
+                  },
+                  "lr": {
+                    "type": "float",
+                    "low": 0.0001,
+                    "high": 0.01,
+                    "log": true
+                  },
+                  "weight_decay": {
+                    "type": "float",
+                    "low": 1e-06,
+                    "high": 0.001,
+                    "log": true
+                  },
+                  "hidden": {
+                    "type": "int",
+                    "low": 96,
+                    "high": 256,
+                    "step": 8
+                  },
+                  "heads": {
+                    "type": "categorical",
+                    "choices": [
+                      2,
+                      4,
+                      8
+                    ]
+                  },
+                  "layers": {
+                    "type": "int",
+                    "low": 1,
+                    "high": 4
+                  },
+                  "dropout": {
+                    "type": "float",
+                    "low": 0.0,
+                    "high": 0.3
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "train": {
+        "architecture": {
+          "type": "group_splitter",
+          "config": {
+            "node_dim": 4,
+            "edge_dim": 4,
+            "graph_dim": 3,
+            "hidden": 128,
+            "heads": 4,
+            "layers": 3,
+            "dropout": 0.1,
+            "num_classes": 3
+          }
+        },
+        "module": {
+          "type": "graph_lightning",
+          "config": {
+            "loss": {
+              "type": "bce_with_logits",
+              "config": {}
+            },
+            "lr": 0.001,
+            "weight_decay": 0.0001,
+            "scheduler_step_size": 2,
+            "scheduler_gamma": 0.5
+          }
+        },
+        "trainer": {
+          "type": "lightning_module",
+          "config": {
+            "trainer_kwargs": {
+              "enable_progress_bar": true,
+              "max_epochs": 25,
+              "gradient_clip_val": 2.0
+            },
+            "early_stopping": {
+              "enabled": true,
+              "type": "relative",
+              "config": {
+                "monitor": "val_loss",
+                "mode": "min",
+                "patience": 5,
+                "min_delta": 0.05,
+                "strict": true,
+                "check_finite": true,
+                "verbose": false
+              }
+            }
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "group_splitter",
+              "config": {
+                "batch_size": null,
+                "mode": "train",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0
+              }
+            },
+            "loaders": {
+              "train_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "train",
+                  "shuffle_batches": true,
+                  "log_diagnostics": false
+                }
+              },
+              "val_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "val",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "evaluate": {
+        "evaluator": {
+          "type": "simple_classification",
+          "config": {
+            "threshold": 0.5,
+            "metrics": [
+              "binary_classification_from_tensors"
+            ],
+            "plots": []
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "group_splitter",
+              "config": {
+                "batch_size": null,
+                "mode": "train",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0
+              }
+            },
+            "loaders": {
+              "test_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "test",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "export": {
+        "exporter": {
+          "type": "torchscript",
+          "config": {
+            "enabled": true,
+            "export_dir": "trained_models/groupsplitter",
+            "filename_prefix": "groupsplitter",
+            "prefer_cuda": true
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "group_splitter",
+              "config": {
+                "batch_size": 1,
+                "mode": "train",
+                "chunk_row_groups": 1,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0
+              }
+            },
+            "loaders": {
+              "export_loader": {
+                "config": {
+                  "mode": "train",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "inference": {
+      "model_handle_builder": {
+        "model_handle": {
+          "type": "script",
+          "config": {
+            "model_subdir": "groupsplitter",
+            "model_type": "torchscript",
+            "model_path": null
+          }
+        }
+      },
+      "inference": {
+        "runtime": {
+          "prefer_cuda": true
+        },
+        "writer": {
+          "type": "group_splitting",
+          "config": {
+            "output_backend": {
+              "type": "parquet",
+              "config": {
+                "target_row_group_rows": 1024
+              }
+            },
+            "fallback_output_dir": "artifacts/inference_small/group_splitter",
+            "output_dir": "artifacts/inference_small/group_splitter",
+            "output_path": null,
+            "streaming": true,
+            "write_timestamped": false,
+            "timestamp": null,
+            "writer_params": {}
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "group_splitter",
+              "config": {
+                "batch_size": 64,
+                "mode": "inference",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "split_seed": 0
+              }
+            },
+            "loaders": {
+              "inference_loader": {
+                "config": {
+                  "mode": "inference",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "endpoint_regression": {
+    "training": {
+      "hpo": {
+        "architecture": {
+          "type": "endpoint_regressor",
+          "config": {
+            "node_dim": 7,
+            "graph_dim": 3,
+            "splitter_prob_dimension": 0,
+            "edge_dim": 4,
+            "hidden": 192,
+            "heads": 4,
+            "layers": 3,
+            "dropout": 0.1,
+            "output_dim": 18
+          }
+        },
+        "module": {
+          "type": "graph_lightning",
+          "config": {
+            "loss": {
+              "type": "mse",
+              "config": {}
+            },
+            "lr": 0.001,
+            "weight_decay": 0.0001,
+            "scheduler_step_size": 2,
+            "scheduler_gamma": 0.5
+          }
+        },
+        "trainer": {
+          "type": "lightning_module",
+          "config": {
+            "trainer_kwargs": {
+              "enable_progress_bar": true,
+              "max_epochs": 10,
+              "gradient_clip_val": 2.0
+            },
+            "early_stopping": {
+              "enabled": true,
+              "type": "relative",
+              "config": {
+                "monitor": "val_loss",
+                "mode": "min",
+                "patience": 5,
+                "min_delta": 0.05,
+                "strict": true,
+                "check_finite": true,
+                "verbose": false
+              }
+            }
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "endpoint_regression",
+              "config": {
+                "batch_size": null,
+                "mode": "train",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 0.125,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0
+              }
+            },
+            "loaders": {
+              "train_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "train",
+                  "shuffle_batches": true,
+                  "log_diagnostics": false
+                }
+              },
+              "val_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "val",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        },
+        "hpo": {
+          "type": "config",
+          "config": {
+            "enabled": true,
+            "n_trials": 4,
+            "direction": "minimize",
+            "seed": null,
+            "study_name": "endpoint_regression_hpo",
+            "storage": "sqlite:///./.optuna/endpoint_regression_hpo.db",
+            "fallback_dir": null,
+            "allow_schema_fallback": true,
+            "objective": {
+              "type": "val_epoch",
+              "config": {}
+            },
+            "search_space": {
+              "type": "config",
+              "config": {
+                "search_space": {
+                  "batch_size": {
+                    "type": "exponent_int",
+                    "base": 2,
+                    "min_exp": 5,
+                    "max_exp": 7
+                  },
+                  "lr": {
+                    "type": "float",
+                    "low": 0.0001,
+                    "high": 0.01,
+                    "log": true
+                  },
+                  "weight_decay": {
+                    "type": "float",
+                    "low": 1e-06,
+                    "high": 0.001,
+                    "log": true
+                  },
+                  "hidden": {
+                    "type": "int",
+                    "low": 96,
+                    "high": 256,
+                    "step": 8
+                  },
+                  "heads": {
+                    "type": "categorical",
+                    "choices": [
+                      2,
+                      4,
+                      8
+                    ]
+                  },
+                  "layers": {
+                    "type": "int",
+                    "low": 1,
+                    "high": 4
+                  },
+                  "dropout": {
+                    "type": "float",
+                    "low": 0.0,
+                    "high": 0.3
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "train": {
+        "architecture": {
+          "type": "endpoint_regressor",
+          "config": {
+            "node_dim": 7,
+            "graph_dim": 3,
+            "splitter_prob_dimension": 0,
+            "edge_dim": 4,
+            "hidden": 192,
+            "heads": 4,
+            "layers": 3,
+            "dropout": 0.1,
+            "output_dim": 18
+          }
+        },
+        "module": {
+          "type": "graph_lightning",
+          "config": {
+            "loss": {
+              "type": "mse",
+              "config": {}
+            },
+            "lr": 0.001,
+            "weight_decay": 0.0001,
+            "scheduler_step_size": 2,
+            "scheduler_gamma": 0.5
+          }
+        },
+        "trainer": {
+          "type": "lightning_module",
+          "config": {
+            "trainer_kwargs": {
+              "enable_progress_bar": true,
+              "max_epochs": 25,
+              "gradient_clip_val": 2.0
+            },
+            "early_stopping": {
+              "enabled": true,
+              "type": "relative",
+              "config": {
+                "monitor": "val_loss",
+                "mode": "min",
+                "patience": 5,
+                "min_delta": 0.05,
+                "strict": true,
+                "check_finite": true,
+                "verbose": false
+              }
+            }
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "endpoint_regression",
+              "config": {
+                "batch_size": null,
+                "mode": "train",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0
+              }
+            },
+            "loaders": {
+              "train_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "train",
+                  "shuffle_batches": true,
+                  "log_diagnostics": false
+                }
+              },
+              "val_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "val",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "evaluate": {
+        "evaluator": {
+          "type": "simple_regression",
+          "config": {
+            "plot_dir": "artifacts/validation_plots/endpoint_regressor"
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "endpoint_regression",
+              "config": {
+                "batch_size": null,
+                "mode": "train",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0
+              }
+            },
+            "loaders": {
+              "test_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "test",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "export": {
+        "exporter": {
+          "type": "torchscript",
+          "config": {
+            "enabled": true,
+            "export_dir": "trained_models/endpoint_regressor",
+            "filename_prefix": "endpoint_regressor",
+            "prefer_cuda": true
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "endpoint_regression",
+              "config": {
+                "batch_size": 1,
+                "mode": "train",
+                "chunk_row_groups": 1,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0
+              }
+            },
+            "loaders": {
+              "export_loader": {
+                "config": {
+                  "mode": "train",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "inference": {
+      "model_handle_builder": {
+        "model_handle": {
+          "type": "script",
+          "config": {
+            "model_subdir": "endpoint_regressor",
+            "model_type": "torchscript",
+            "model_path": null
+          }
+        }
+      },
+      "inference": {
+        "runtime": {
+          "prefer_cuda": true
+        },
+        "writer": {
+          "type": "endpoint_regression",
+          "config": {
+            "output_backend": {
+              "type": "parquet",
+              "config": {
+                "target_row_group_rows": 1024
+              }
+            },
+            "fallback_output_dir": "artifacts/inference_small/endpoint_regressor",
+            "output_dir": "artifacts/inference_small/endpoint_regressor",
+            "output_path": "artifacts/inference_small/endpoint_regressor/endpoint_regressor_inference_preds.parquet",
+            "streaming": true,
+            "write_timestamped": false,
+            "timestamp": null,
+            "writer_params": {}
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "endpoint_regression",
+              "config": {
+                "batch_size": 64,
+                "mode": "inference",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "split_seed": 0
+              }
+            },
+            "loaders": {
+              "inference_loader": {
+                "config": {
+                  "mode": "inference",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "event_splitter": {
+    "training": {
+      "hpo": {
+        "architecture": {
+          "type": "event_splitter",
+          "config": {
+            "node_dim": 4,
+            "group_prob_dimension": 3,
+            "splitter_prob_dimension": 3,
+            "endpoint_dimension": 18,
+            "edge_attr_dimension": 5,
+            "hidden": 192,
+            "heads": 4,
+            "layers": 3,
+            "dropout": 0.1
+          }
+        },
+        "module": {
+          "type": "graph_lightning",
+          "config": {
+            "loss": {
+              "type": "bce_with_logits",
+              "config": {}
+            },
+            "lr": 0.001,
+            "weight_decay": 0.0001,
+            "scheduler_step_size": 2,
+            "scheduler_gamma": 0.5
+          }
+        },
+        "trainer": {
+          "type": "lightning_module",
+          "config": {
+            "trainer_kwargs": {
+              "enable_progress_bar": true,
+              "max_epochs": 10,
+              "gradient_clip_val": 2.0
+            },
+            "early_stopping": {
+              "enabled": true,
+              "type": "relative",
+              "config": {
+                "monitor": "val_loss",
+                "mode": "min",
+                "patience": 5,
+                "min_delta": 0.05,
+                "strict": true,
+                "check_finite": true,
+                "verbose": false
+              }
+            }
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": [],
+                "endpoint": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "event_splitter",
+              "config": {
+                "batch_size": null,
+                "mode": "train",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 0.125,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0,
+                "use_group_probs": true,
+                "use_splitter_probs": true,
+                "use_endpoint_preds": true
+              }
+            },
+            "loaders": {
+              "train_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "train",
+                  "shuffle_batches": true,
+                  "log_diagnostics": false
+                }
+              },
+              "val_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "val",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        },
+        "hpo": {
+          "type": "config",
+          "config": {
+            "enabled": true,
+            "n_trials": 4,
+            "direction": "minimize",
+            "seed": null,
+            "study_name": "event_splitter_hpo",
+            "storage": "sqlite:///./.optuna/event_splitter_hpo.db",
+            "fallback_dir": null,
+            "allow_schema_fallback": true,
+            "objective": {
+              "type": "val_epoch",
+              "config": {}
+            },
+            "search_space": {
+              "type": "config",
+              "config": {
+                "search_space": {
+                  "batch_size": {
+                    "type": "exponent_int",
+                    "base": 2,
+                    "min_exp": 2,
+                    "max_exp": 4
+                  },
+                  "lr": {
+                    "type": "float",
+                    "low": 0.0001,
+                    "high": 0.01,
+                    "log": true
+                  },
+                  "weight_decay": {
+                    "type": "float",
+                    "low": 1e-06,
+                    "high": 0.001,
+                    "log": true
+                  },
+                  "hidden": {
+                    "type": "int",
+                    "low": 128,
+                    "high": 320,
+                    "step": 16
+                  },
+                  "heads": {
+                    "type": "categorical",
+                    "choices": [
+                      2,
+                      4,
+                      8
+                    ]
+                  },
+                  "layers": {
+                    "type": "int",
+                    "low": 1,
+                    "high": 4
+                  },
+                  "dropout": {
+                    "type": "float",
+                    "low": 0.0,
+                    "high": 0.3
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "train": {
+        "architecture": {
+          "type": "event_splitter",
+          "config": {
+            "node_dim": 4,
+            "group_prob_dimension": 3,
+            "splitter_prob_dimension": 3,
+            "endpoint_dimension": 18,
+            "edge_attr_dimension": 5,
+            "hidden": 192,
+            "heads": 4,
+            "layers": 3,
+            "dropout": 0.1
+          }
+        },
+        "module": {
+          "type": "graph_lightning",
+          "config": {
+            "loss": {
+              "type": "bce_with_logits",
+              "config": {}
+            },
+            "lr": 0.001,
+            "weight_decay": 0.0001,
+            "scheduler_step_size": 2,
+            "scheduler_gamma": 0.5
+          }
+        },
+        "trainer": {
+          "type": "lightning_module",
+          "config": {
+            "trainer_kwargs": {
+              "enable_progress_bar": true,
+              "max_epochs": 25,
+              "gradient_clip_val": 2.0
+            },
+            "early_stopping": {
+              "enabled": true,
+              "type": "relative",
+              "config": {
+                "monitor": "val_loss",
+                "mode": "min",
+                "patience": 5,
+                "min_delta": 0.05,
+                "strict": true,
+                "check_finite": true,
+                "verbose": false
+              }
+            }
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": [],
+                "endpoint": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "event_splitter",
+              "config": {
+                "batch_size": null,
+                "mode": "train",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0,
+                "use_group_probs": true,
+                "use_splitter_probs": true,
+                "use_endpoint_preds": true
+              }
+            },
+            "loaders": {
+              "train_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "train",
+                  "shuffle_batches": true,
+                  "log_diagnostics": false
+                }
+              },
+              "val_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "val",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "evaluate": {
+        "evaluator": {
+          "type": "simple_classification",
+          "config": {
+            "threshold": 0.5,
+            "metrics": [
+              "binary_classification_from_tensors"
+            ],
+            "plots": []
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": [],
+                "endpoint": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "event_splitter",
+              "config": {
+                "batch_size": null,
+                "mode": "train",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0,
+                "use_group_probs": true,
+                "use_splitter_probs": true,
+                "use_endpoint_preds": true
+              }
+            },
+            "loaders": {
+              "test_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "test",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "export": {
+        "exporter": {
+          "type": "torchscript",
+          "config": {
+            "enabled": true,
+            "export_dir": "trained_models/event_splitter",
+            "filename_prefix": "event_splitter",
+            "prefer_cuda": true
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": [],
+                "endpoint": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "event_splitter",
+              "config": {
+                "batch_size": 1,
+                "mode": "train",
+                "chunk_row_groups": 1,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0,
+                "use_group_probs": true,
+                "use_splitter_probs": true,
+                "use_endpoint_preds": true
+              }
+            },
+            "loaders": {
+              "export_loader": {
+                "config": {
+                  "mode": "train",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "inference": {
+      "model_handle_builder": {
+        "model_handle": {
+          "type": "script",
+          "config": {
+            "model_subdir": "event_splitter",
+            "model_type": "torchscript",
+            "model_path": null
+          }
+        }
+      },
+      "inference": {
+        "runtime": {
+          "prefer_cuda": true
+        },
+        "writer": {
+          "type": "event_splitter",
+          "config": {
+            "output_backend": {
+              "type": "parquet",
+              "config": {
+                "target_row_group_rows": 1024
+              }
+            },
+            "fallback_output_dir": "data/event_splitter",
+            "output_dir": "data/event_splitter",
+            "output_path": null,
+            "streaming": true,
+            "write_timestamped": false,
+            "timestamp": null,
+            "writer_params": {}
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": [],
+                "endpoint": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "event_splitter",
+              "config": {
+                "batch_size": 32,
+                "mode": "inference",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "split_seed": 0,
+                "use_group_probs": true,
+                "use_splitter_probs": true,
+                "use_endpoint_preds": true
+              }
+            },
+            "loaders": {
+              "inference_loader": {
+                "config": {
+                  "mode": "inference",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "pion_stop": {
+    "training": {
+      "hpo": {
+        "architecture": {
+          "type": "pion_stop_regressor",
+          "config": {
+            "node_dim": 4,
+            "graph_dim": 3,
+            "splitter_prob_dimension": 3,
+            "endpoint_pred_dimension": 18,
+            "event_affinity_dimension": 3,
+            "pion_stop_pred_dimension": 0,
+            "edge_dim": 4,
+            "hidden": 192,
+            "heads": 4,
+            "layers": 3,
+            "dropout": 0.1,
+            "output_dim": 9
+          }
+        },
+        "module": {
+          "type": "graph_lightning",
+          "config": {
+            "loss": {
+              "type": "quantile_pinball",
+              "config": {}
+            },
+            "lr": 0.001,
+            "weight_decay": 0.0001,
+            "scheduler_step_size": 2,
+            "scheduler_gamma": 0.5
+          }
+        },
+        "trainer": {
+          "type": "lightning_module",
+          "config": {
+            "trainer_kwargs": {
+              "enable_progress_bar": true,
+              "max_epochs": 10,
+              "gradient_clip_val": 2.0
+            },
+            "early_stopping": {
+              "enabled": true,
+              "type": "relative",
+              "config": {
+                "monitor": "val_loss",
+                "mode": "min",
+                "patience": 5,
+                "min_delta": 0.05,
+                "strict": true,
+                "check_finite": true,
+                "verbose": false
+              }
+            }
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": [],
+                "endpoint": [],
+                "event_splitter": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "pion_stop",
+              "config": {
+                "batch_size": null,
+                "mode": "train",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 0.25,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0,
+                "use_group_probs": true,
+                "use_splitter_probs": true,
+                "use_endpoint_preds": true,
+                "use_event_splitter_affinity": true,
+                "use_pion_stop_preds": false
+              }
+            },
+            "loaders": {
+              "train_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "train",
+                  "shuffle_batches": true,
+                  "log_diagnostics": false
+                }
+              },
+              "val_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "val",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        },
+        "hpo": {
+          "type": "config",
+          "config": {
+            "enabled": true,
+            "n_trials": 4,
+            "direction": "minimize",
+            "seed": null,
+            "study_name": "pion_stop_hpo",
+            "storage": "sqlite:///./.optuna/pion_stop_hpo.db",
+            "fallback_dir": null,
+            "allow_schema_fallback": true,
+            "objective": {
+              "type": "val_epoch",
+              "config": {}
+            },
+            "search_space": {
+              "type": "config",
+              "config": {
+                "search_space": {
+                  "batch_size": {
+                    "type": "exponent_int",
+                    "base": 2,
+                    "min_exp": 5,
+                    "max_exp": 7
+                  },
+                  "lr": {
+                    "type": "float",
+                    "low": 0.0001,
+                    "high": 0.01,
+                    "log": true
+                  },
+                  "weight_decay": {
+                    "type": "float",
+                    "low": 1e-06,
+                    "high": 0.001,
+                    "log": true
+                  },
+                  "hidden": {
+                    "type": "int",
+                    "low": 128,
+                    "high": 320,
+                    "step": 32
+                  },
+                  "dropout": {
+                    "type": "float",
+                    "low": 0.0,
+                    "high": 0.3
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "train": {
+        "architecture": {
+          "type": "pion_stop_regressor",
+          "config": {
+            "node_dim": 4,
+            "graph_dim": 3,
+            "splitter_prob_dimension": 3,
+            "endpoint_pred_dimension": 18,
+            "event_affinity_dimension": 3,
+            "pion_stop_pred_dimension": 0,
+            "edge_dim": 4,
+            "hidden": 192,
+            "heads": 4,
+            "layers": 3,
+            "dropout": 0.1,
+            "output_dim": 9
+          }
+        },
+        "module": {
+          "type": "graph_lightning",
+          "config": {
+            "loss": {
+              "type": "quantile_pinball",
+              "config": {}
+            },
+            "lr": 0.001,
+            "weight_decay": 0.0001,
+            "scheduler_step_size": 2,
+            "scheduler_gamma": 0.5
+          }
+        },
+        "trainer": {
+          "type": "lightning_module",
+          "config": {
+            "trainer_kwargs": {
+              "enable_progress_bar": true,
+              "max_epochs": 25,
+              "gradient_clip_val": 2.0
+            },
+            "early_stopping": {
+              "enabled": true,
+              "type": "relative",
+              "config": {
+                "monitor": "val_loss",
+                "mode": "min",
+                "patience": 5,
+                "min_delta": 0.05,
+                "strict": true,
+                "check_finite": true,
+                "verbose": false
+              }
+            }
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": [],
+                "endpoint": [],
+                "event_splitter": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "pion_stop",
+              "config": {
+                "batch_size": null,
+                "mode": "train",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0,
+                "use_group_probs": true,
+                "use_splitter_probs": true,
+                "use_endpoint_preds": true,
+                "use_event_splitter_affinity": true,
+                "use_pion_stop_preds": false
+              }
+            },
+            "loaders": {
+              "train_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "train",
+                  "shuffle_batches": true,
+                  "log_diagnostics": false
+                }
+              },
+              "val_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "val",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "evaluate": {
+        "evaluator": {
+          "type": "simple_regression",
+          "config": {
+            "plots": []
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": [],
+                "endpoint": [],
+                "event_splitter": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "pion_stop",
+              "config": {
+                "batch_size": null,
+                "mode": "train",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0,
+                "use_group_probs": true,
+                "use_splitter_probs": true,
+                "use_endpoint_preds": true,
+                "use_event_splitter_affinity": true,
+                "use_pion_stop_preds": false
+              }
+            },
+            "loaders": {
+              "test_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "test",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        },
+        "enabled": true
+      },
+      "export": {
+        "exporter": {
+          "type": "torchscript",
+          "config": {
+            "enabled": true,
+            "export_dir": "trained_models/pion_stop_regression",
+            "filename_prefix": "pion_stop",
+            "prefer_cuda": true
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": [],
+                "endpoint": [],
+                "event_splitter": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "pion_stop",
+              "config": {
+                "batch_size": 1,
+                "mode": "train",
+                "chunk_row_groups": 1,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0,
+                "use_group_probs": true,
+                "use_splitter_probs": true,
+                "use_endpoint_preds": true,
+                "use_event_splitter_affinity": true,
+                "use_pion_stop_preds": false
+              }
+            },
+            "loaders": {
+              "export_loader": {
+                "config": {
+                  "mode": "train",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "inference": {
+      "model_handle_builder": {
+        "model_handle": {
+          "type": "script",
+          "config": {
+            "model_subdir": "pion_stop_regression",
+            "model_type": "torchscript",
+            "model_path": null
+          }
+        }
+      },
+      "inference": {
+        "runtime": {
+          "prefer_cuda": true
+        },
+        "writer": {
+          "type": "pion_stop",
+          "config": {
+            "output_backend": {
+              "type": "parquet",
+              "config": {
+                "target_row_group_rows": 1024
+              }
+            },
+            "fallback_output_dir": "data/pion_stop_regression",
+            "output_dir": "data/pion_stop_regression",
+            "output_path": null,
+            "streaming": true,
+            "write_timestamped": false,
+            "timestamp": null,
+            "writer_params": {}
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": [],
+                "endpoint": [],
+                "event_splitter": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "pion_stop",
+              "config": {
+                "batch_size": 64,
+                "mode": "inference",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "split_seed": 0,
+                "use_group_probs": true,
+                "use_splitter_probs": true,
+                "use_endpoint_preds": true,
+                "use_event_splitter_affinity": true,
+                "use_pion_stop_preds": false
+              }
+            },
+            "loaders": {
+              "inference_loader": {
+                "config": {
+                  "mode": "inference",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "positron_angle": {
+    "training": {
+      "hpo": {
+        "architecture": {
+          "type": "positron_angle_regressor",
+          "config": {
+            "node_dim": 4,
+            "graph_dim": 3,
+            "splitter_prob_dimension": 3,
+            "endpoint_pred_dimension": 18,
+            "event_affinity_dimension": 3,
+            "pion_stop_pred_dimension": 3,
+            "edge_dim": 4,
+            "hidden": 192,
+            "heads": 4,
+            "layers": 3,
+            "dropout": 0.1,
+            "output_dim": 9
+          }
+        },
+        "module": {
+          "type": "graph_lightning",
+          "config": {
+            "loss": {
+              "type": "quantile_angular",
+              "config": {
+                "num_outputs": 3,
+                "quantiles": [
+                  0.16,
+                  0.5,
+                  0.84
+                ],
+                "pinball_weight": 0.0,
+                "angular_weight": 1.0,
+                "unit_norm_weight": 0.0,
+                "normalize_target": false,
+                "clamp_dot": false
+              }
+            },
+            "lr": 0.001,
+            "weight_decay": 0.0001,
+            "scheduler_step_size": 2,
+            "scheduler_gamma": 0.5
+          }
+        },
+        "trainer": {
+          "type": "lightning_module",
+          "config": {
+            "trainer_kwargs": {
+              "enable_progress_bar": true,
+              "max_epochs": 10,
+              "gradient_clip_val": 2.0
+            },
+            "early_stopping": {
+              "enabled": true,
+              "type": "relative",
+              "config": {
+                "monitor": "val_loss",
+                "mode": "min",
+                "patience": 5,
+                "min_delta": 0.05,
+                "strict": true,
+                "check_finite": true,
+                "verbose": false
+              }
+            }
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": [],
+                "endpoint": [],
+                "event_splitter": [],
+                "pion_stop": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "positron_angle",
+              "config": {
+                "batch_size": null,
+                "mode": "train",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 0.125,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0,
+                "use_group_probs": true,
+                "use_splitter_probs": true,
+                "use_endpoint_preds": true,
+                "use_event_splitter_affinity": true,
+                "use_pion_stop_preds": true,
+                "training_relevant_only": false,
+                "min_relevant_hits": 2
+              }
+            },
+            "loaders": {
+              "train_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "train",
+                  "shuffle_batches": true,
+                  "log_diagnostics": false
+                }
+              },
+              "val_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "val",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        },
+        "hpo": {
+          "type": "config",
+          "config": {
+            "enabled": true,
+            "n_trials": 4,
+            "direction": "minimize",
+            "seed": null,
+            "study_name": "positron_angle_hpo",
+            "storage": "sqlite:///./.optuna/positron_angle_hpo.db",
+            "fallback_dir": null,
+            "allow_schema_fallback": true,
+            "objective": {
+              "type": "val_epoch",
+              "config": {}
+            },
+            "search_space": {
+              "type": "config",
+              "config": {
+                "search_space": {
+                  "batch_size": {
+                    "type": "exponent_int",
+                    "base": 2,
+                    "min_exp": 5,
+                    "max_exp": 7
+                  },
+                  "lr": {
+                    "type": "float",
+                    "low": 0.0001,
+                    "high": 0.01,
+                    "log": true
+                  },
+                  "weight_decay": {
+                    "type": "float",
+                    "low": 1e-06,
+                    "high": 0.001,
+                    "log": true
+                  },
+                  "hidden": {
+                    "type": "int",
+                    "low": 128,
+                    "high": 320,
+                    "step": 32
+                  },
+                  "heads": {
+                    "type": "categorical",
+                    "choices": [
+                      2,
+                      4,
+                      8
+                    ]
+                  },
+                  "layers": {
+                    "type": "int",
+                    "low": 1,
+                    "high": 4
+                  },
+                  "dropout": {
+                    "type": "float",
+                    "low": 0.0,
+                    "high": 0.3
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "train": {
+        "architecture": {
+          "type": "positron_angle_regressor",
+          "config": {
+            "node_dim": 4,
+            "graph_dim": 3,
+            "splitter_prob_dimension": 3,
+            "endpoint_pred_dimension": 18,
+            "event_affinity_dimension": 3,
+            "pion_stop_pred_dimension": 3,
+            "edge_dim": 4,
+            "hidden": 192,
+            "heads": 4,
+            "layers": 3,
+            "dropout": 0.1,
+            "output_dim": 9
+          }
+        },
+        "module": {
+          "type": "graph_lightning",
+          "config": {
+            "loss": {
+              "type": "quantile_angular",
+              "config": {
+                "num_outputs": 3,
+                "quantiles": [
+                  0.16,
+                  0.5,
+                  0.84
+                ],
+                "pinball_weight": 0.0,
+                "angular_weight": 1.0,
+                "unit_norm_weight": 0.0,
+                "normalize_target": false,
+                "clamp_dot": false
+              }
+            },
+            "lr": 0.001,
+            "weight_decay": 0.0001,
+            "scheduler_step_size": 2,
+            "scheduler_gamma": 0.5
+          }
+        },
+        "trainer": {
+          "type": "lightning_module",
+          "config": {
+            "trainer_kwargs": {
+              "enable_progress_bar": true,
+              "max_epochs": 25,
+              "gradient_clip_val": 2.0
+            },
+            "early_stopping": {
+              "enabled": true,
+              "type": "relative",
+              "config": {
+                "monitor": "val_loss",
+                "mode": "min",
+                "patience": 5,
+                "min_delta": 0.05,
+                "strict": true,
+                "check_finite": true,
+                "verbose": false
+              }
+            }
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": [],
+                "endpoint": [],
+                "event_splitter": [],
+                "pion_stop": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "positron_angle",
+              "config": {
+                "batch_size": null,
+                "mode": "train",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0,
+                "use_group_probs": true,
+                "use_splitter_probs": true,
+                "use_endpoint_preds": true,
+                "use_event_splitter_affinity": true,
+                "use_pion_stop_preds": true,
+                "training_relevant_only": false,
+                "min_relevant_hits": 2
+              }
+            },
+            "loaders": {
+              "train_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "train",
+                  "shuffle_batches": true,
+                  "log_diagnostics": false
+                }
+              },
+              "val_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "val",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "evaluate": {
+        "evaluator": {
+          "type": "simple_regression",
+          "config": {
+            "plot_dir": "artifacts/validation_plots/positron_angle_regressor"
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": [],
+                "endpoint": [],
+                "event_splitter": [],
+                "pion_stop": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "positron_angle",
+              "config": {
+                "batch_size": null,
+                "mode": "train",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0,
+                "use_group_probs": true,
+                "use_splitter_probs": true,
+                "use_endpoint_preds": true,
+                "use_event_splitter_affinity": true,
+                "use_pion_stop_preds": true,
+                "training_relevant_only": false,
+                "min_relevant_hits": 2
+              }
+            },
+            "loaders": {
+              "test_loader": {
+                "config": {
+                  "mode": "train",
+                  "split": "test",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "export": {
+        "exporter": {
+          "type": "torchscript",
+          "config": {
+            "enabled": true,
+            "export_dir": "trained_models/positron_angle_regression",
+            "filename_prefix": "positron_angle",
+            "prefer_cuda": true
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": [],
+                "endpoint": [],
+                "event_splitter": [],
+                "pion_stop": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "positron_angle",
+              "config": {
+                "batch_size": 1,
+                "mode": "train",
+                "chunk_row_groups": 1,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "train_fraction": 0.8,
+                "val_fraction": 0.1,
+                "test_fraction": 0.1,
+                "split_seed": 0,
+                "use_group_probs": true,
+                "use_splitter_probs": true,
+                "use_endpoint_preds": true,
+                "use_event_splitter_affinity": true,
+                "use_pion_stop_preds": true,
+                "training_relevant_only": false,
+                "min_relevant_hits": 2
+              }
+            },
+            "loaders": {
+              "export_loader": {
+                "config": {
+                  "mode": "train",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "inference": {
+      "model_handle_builder": {
+        "model_handle": {
+          "type": "script",
+          "config": {
+            "model_subdir": "positron_angle_regression",
+            "model_type": "torchscript",
+            "model_path": null
+          }
+        }
+      },
+      "inference": {
+        "runtime": {
+          "prefer_cuda": true
+        },
+        "writer": {
+          "type": "positron_angle",
+          "config": {
+            "output_backend": {
+              "type": "parquet",
+              "config": {
+                "target_row_group_rows": 1024
+              }
+            },
+            "fallback_output_dir": "artifacts/inference_small/positron_angle_regression",
+            "output_dir": "artifacts/inference_small/positron_angle_regression",
+            "output_path": "artifacts/inference_small/positron_angle_regression/positron_angle_inference_preds.parquet",
+            "streaming": true,
+            "write_timestamped": false,
+            "timestamp": null,
+            "writer_params": {}
+          }
+        },
+        "loader_manager": {
+          "config": {
+            "input_sources_spec": {
+              "main_sources": [],
+              "optional_sources_by_name": {
+                "group_probs": [],
+                "group_splitter": [],
+                "endpoint": [],
+                "event_splitter": [],
+                "pion_stop": []
+              },
+              "source_type": "file"
+            },
+            "input_backend": {
+              "type": "parquet",
+              "config": {}
+            },
+            "defaults": {
+              "type": "positron_angle",
+              "config": {
+                "batch_size": 64,
+                "mode": "inference",
+                "chunk_row_groups": 4,
+                "chunk_workers": 0,
+                "edge_template_cache_enabled": false,
+                "edge_template_cache_max_entries": null,
+                "sample_fraction": 1.0,
+                "split_seed": 0,
+                "use_group_probs": true,
+                "use_splitter_probs": true,
+                "use_endpoint_preds": true,
+                "use_event_splitter_affinity": true,
+                "use_pion_stop_preds": true,
+                "training_relevant_only": false,
+                "min_relevant_hits": 2
+              }
+            },
+            "loaders": {
+              "inference_loader": {
+                "config": {
+                  "mode": "inference",
+                  "shuffle_batches": false,
+                  "log_diagnostics": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

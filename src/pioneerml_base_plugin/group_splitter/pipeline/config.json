@@ -1,0 +1,446 @@
+{
+  "training": {
+    "hpo": {
+      "architecture": {
+        "type": "group_splitter",
+        "config": {
+          "node_dim": 4,
+          "edge_dim": 4,
+          "graph_dim": 3,
+          "hidden": 128,
+          "heads": 4,
+          "layers": 3,
+          "dropout": 0.1,
+          "num_classes": 3
+        }
+      },
+      "module": {
+        "type": "graph_lightning",
+        "config": {
+          "loss": {
+            "type": "bce_with_logits",
+            "config": {}
+          },
+          "lr": 0.001,
+          "weight_decay": 0.0001,
+          "scheduler_step_size": 2,
+          "scheduler_gamma": 0.5
+        }
+      },
+      "trainer": {
+        "type": "lightning_module",
+        "config": {
+          "trainer_kwargs": {
+            "enable_progress_bar": true,
+            "max_epochs": 10,
+            "gradient_clip_val": 2.0
+          },
+          "early_stopping": {
+            "enabled": true,
+            "type": "relative",
+            "config": {
+              "monitor": "val_loss",
+              "mode": "min",
+              "patience": 5,
+              "min_delta": 0.05,
+              "strict": true,
+              "check_finite": true,
+              "verbose": false
+            }
+          }
+        }
+      },
+      "loader_manager": {
+        "config": {
+          "input_sources_spec": {
+            "main_sources": [],
+            "optional_sources_by_name": {
+              "group_probs": []
+            },
+            "source_type": "file"
+          },
+          "input_backend": {
+            "type": "parquet",
+            "config": {}
+          },
+          "defaults": {
+            "type": "group_splitter",
+            "config": {
+              "batch_size": null,
+              "mode": "train",
+              "chunk_row_groups": 4,
+              "chunk_workers": 0,
+              "edge_template_cache_enabled": false,
+              "edge_template_cache_max_entries": null,
+              "sample_fraction": 0.125,
+              "train_fraction": 0.8,
+              "val_fraction": 0.1,
+              "test_fraction": 0.1,
+              "split_seed": 0
+            }
+          },
+          "loaders": {
+            "train_loader": {
+              "config": {
+                "mode": "train",
+                "split": "train",
+                "shuffle_batches": true,
+                "log_diagnostics": false
+              }
+            },
+            "val_loader": {
+              "config": {
+                "mode": "train",
+                "split": "val",
+                "shuffle_batches": false,
+                "log_diagnostics": false
+              }
+            }
+          }
+        }
+      },
+      "hpo": {
+        "type": "config",
+        "config": {
+          "enabled": true,
+          "n_trials": 4,
+          "direction": "minimize",
+          "seed": null,
+          "study_name": "group_splitter_hpo",
+          "storage": "sqlite:///./.optuna/group_splitter_hpo.db",
+          "fallback_dir": null,
+          "allow_schema_fallback": true,
+          "objective": {
+            "type": "val_epoch",
+            "config": {}
+          },
+          "search_space": {
+            "type": "config",
+            "config": {
+              "search_space": {
+                "batch_size": {
+                  "type": "exponent_int",
+                  "base": 2,
+                  "min_exp": 5,
+                  "max_exp": 7
+                },
+                "lr": {
+                  "type": "float",
+                  "low": 0.0001,
+                  "high": 0.01,
+                  "log": true
+                },
+                "weight_decay": {
+                  "type": "float",
+                  "low": 1e-06,
+                  "high": 0.001,
+                  "log": true
+                },
+                "hidden": {
+                  "type": "int",
+                  "low": 96,
+                  "high": 256,
+                  "step": 8
+                },
+                "heads": {
+                  "type": "categorical",
+                  "choices": [
+                    2,
+                    4,
+                    8
+                  ]
+                },
+                "layers": {
+                  "type": "int",
+                  "low": 1,
+                  "high": 4
+                },
+                "dropout": {
+                  "type": "float",
+                  "low": 0.0,
+                  "high": 0.3
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "train": {
+      "architecture": {
+        "type": "group_splitter",
+        "config": {
+          "node_dim": 4,
+          "edge_dim": 4,
+          "graph_dim": 3,
+          "hidden": 128,
+          "heads": 4,
+          "layers": 3,
+          "dropout": 0.1,
+          "num_classes": 3
+        }
+      },
+      "module": {
+        "type": "graph_lightning",
+        "config": {
+          "loss": {
+            "type": "bce_with_logits",
+            "config": {}
+          },
+          "lr": 0.001,
+          "weight_decay": 0.0001,
+          "scheduler_step_size": 2,
+          "scheduler_gamma": 0.5
+        }
+      },
+      "trainer": {
+        "type": "lightning_module",
+        "config": {
+          "trainer_kwargs": {
+            "enable_progress_bar": true,
+            "max_epochs": 25,
+            "gradient_clip_val": 2.0
+          },
+          "early_stopping": {
+            "enabled": true,
+            "type": "relative",
+            "config": {
+              "monitor": "val_loss",
+              "mode": "min",
+              "patience": 5,
+              "min_delta": 0.05,
+              "strict": true,
+              "check_finite": true,
+              "verbose": false
+            }
+          }
+        }
+      },
+      "loader_manager": {
+        "config": {
+          "input_sources_spec": {
+            "main_sources": [],
+            "optional_sources_by_name": {
+              "group_probs": []
+            },
+            "source_type": "file"
+          },
+          "input_backend": {
+            "type": "parquet",
+            "config": {}
+          },
+          "defaults": {
+            "type": "group_splitter",
+            "config": {
+              "batch_size": null,
+              "mode": "train",
+              "chunk_row_groups": 4,
+              "chunk_workers": 0,
+              "edge_template_cache_enabled": false,
+              "edge_template_cache_max_entries": null,
+              "sample_fraction": 1.0,
+              "train_fraction": 0.8,
+              "val_fraction": 0.1,
+              "test_fraction": 0.1,
+              "split_seed": 0
+            }
+          },
+          "loaders": {
+            "train_loader": {
+              "config": {
+                "mode": "train",
+                "split": "train",
+                "shuffle_batches": true,
+                "log_diagnostics": false
+              }
+            },
+            "val_loader": {
+              "config": {
+                "mode": "train",
+                "split": "val",
+                "shuffle_batches": false,
+                "log_diagnostics": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "evaluate": {
+      "evaluator": {
+        "type": "simple_classification",
+        "config": {
+          "threshold": 0.5,
+          "metrics": [
+            "binary_classification_from_tensors"
+          ],
+          "plots": []
+        }
+      },
+      "loader_manager": {
+        "config": {
+          "input_sources_spec": {
+            "main_sources": [],
+            "optional_sources_by_name": {
+              "group_probs": []
+            },
+            "source_type": "file"
+          },
+          "input_backend": {
+            "type": "parquet",
+            "config": {}
+          },
+          "defaults": {
+            "type": "group_splitter",
+            "config": {
+              "batch_size": null,
+              "mode": "train",
+              "chunk_row_groups": 4,
+              "chunk_workers": 0,
+              "edge_template_cache_enabled": false,
+              "edge_template_cache_max_entries": null,
+              "sample_fraction": 1.0,
+              "train_fraction": 0.8,
+              "val_fraction": 0.1,
+              "test_fraction": 0.1,
+              "split_seed": 0
+            }
+          },
+          "loaders": {
+            "test_loader": {
+              "config": {
+                "mode": "train",
+                "split": "test",
+                "shuffle_batches": false,
+                "log_diagnostics": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "export": {
+      "exporter": {
+        "type": "torchscript",
+        "config": {
+          "enabled": true,
+          "export_dir": "trained_models/groupsplitter",
+          "filename_prefix": "groupsplitter",
+          "prefer_cuda": true
+        }
+      },
+      "loader_manager": {
+        "config": {
+          "input_sources_spec": {
+            "main_sources": [],
+            "optional_sources_by_name": {
+              "group_probs": []
+            },
+            "source_type": "file"
+          },
+          "input_backend": {
+            "type": "parquet",
+            "config": {}
+          },
+          "defaults": {
+            "type": "group_splitter",
+            "config": {
+              "batch_size": 1,
+              "mode": "train",
+              "chunk_row_groups": 1,
+              "chunk_workers": 0,
+              "edge_template_cache_enabled": false,
+              "edge_template_cache_max_entries": null,
+              "sample_fraction": 1.0,
+              "train_fraction": 0.8,
+              "val_fraction": 0.1,
+              "test_fraction": 0.1,
+              "split_seed": 0
+            }
+          },
+          "loaders": {
+            "export_loader": {
+              "config": {
+                "mode": "train",
+                "shuffle_batches": false,
+                "log_diagnostics": false
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "inference": {
+    "model_handle_builder": {
+      "model_handle": {
+        "type": "script",
+        "config": {
+          "model_subdir": "groupsplitter",
+          "model_type": "torchscript",
+          "model_path": null
+        }
+      }
+    },
+    "inference": {
+      "runtime": {
+        "prefer_cuda": true
+      },
+      "writer": {
+        "type": "group_splitting",
+        "config": {
+          "output_backend": {
+            "type": "parquet",
+            "config": {
+              "target_row_group_rows": 1024
+            }
+          },
+          "fallback_output_dir": "artifacts/inference_small/group_splitter",
+          "output_dir": "artifacts/inference_small/group_splitter",
+          "output_path": null,
+          "streaming": true,
+          "write_timestamped": false,
+          "timestamp": null,
+          "writer_params": {}
+        }
+      },
+      "loader_manager": {
+        "config": {
+          "input_sources_spec": {
+            "main_sources": [],
+            "optional_sources_by_name": {
+              "group_probs": []
+            },
+            "source_type": "file"
+          },
+          "input_backend": {
+            "type": "parquet",
+            "config": {}
+          },
+          "defaults": {
+            "type": "group_splitter",
+            "config": {
+              "batch_size": 64,
+              "mode": "inference",
+              "chunk_row_groups": 4,
+              "chunk_workers": 0,
+              "edge_template_cache_enabled": false,
+              "edge_template_cache_max_entries": null,
+              "sample_fraction": 1.0,
+              "split_seed": 0
+            }
+          },
+          "loaders": {
+            "inference_loader": {
+              "config": {
+                "mode": "inference",
+                "shuffle_batches": false,
+                "log_diagnostics": false
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
